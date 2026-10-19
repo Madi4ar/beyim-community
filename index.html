@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<title>Beyim Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="toast-root" class="toast-root"></div>
+
+<!-- Placeholder only: in the real Beyim Ustaz shell this 268px column is the
+     platform's own left navigation, outside this module. Kept here so the
+     feed/right-panel proportions preview correctly in this standalone build. -->
+<aside class="host-sidebar-placeholder">Навигация Beyim Ustaz<br>(вне этого модуля, 268px)</aside>
+
+<div class="app-shell">
+  <aside class="side-panel">
+    <div class="side-panel-inner">
+      <div class="brand" data-short="BC">Beyim Community</div>
+      <button id="create-post-btn" class="btn btn-primary" data-action="open-composer">Создать</button>
+      <div class="side-nav-icons">
+        <button class="icon-btn nav-icon-btn" data-action="go-tab" data-tab-id="saved" title="Сохранённое" aria-label="Сохранённое">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </button>
+        <button class="icon-btn nav-icon-btn" data-action="go-tab" data-tab-id="my" title="Мои публикации" aria-label="Мои публикации">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/></svg>
+        </button>
+        <button id="notif-btn" class="icon-btn" data-action="toggle-notif" aria-label="Уведомления">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span id="notif-dot" class="dot" hidden></span>
+        </button>
+        <div id="notif-panel" class="dropdown-panel" hidden></div>
+      </div>
+      <nav id="tabs" class="tabs"></nav>
+      <button id="role-switch" class="role-switch" data-action="toggle-role" title="Переключить режим просмотра" hidden>Режим: Педагог</button>
+    </div>
+  </aside>
+
+  <main id="view-root" class="view-root"></main>
+</div>
+
+<div id="modal-root" class="modal-root" hidden></div>
+
+<script src="js/storage.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/moderation.js"></script>
+<script src="js/state.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/replyForm.js"></script>
+<script src="js/composer.js"></script>
+<script src="js/postCard.js"></script>
+<script src="js/feed.js"></script>
+<script src="js/moderatorPanel.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
