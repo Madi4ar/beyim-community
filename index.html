@@ -8,7 +8,324 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          ink: '#111111',
+          'ink-soft': '#6B6B6B',
+          'ink-meta': '#8A8A8A',
+          line: '#E5E5E5',
+          surface: '#FAFAFA',
+          'hover-bg': '#F3F3F3',
+          'field-border': '#DADADA',
+          'tag-bg': '#F4F4F4',
+          'tag-text': '#444444',
+          'avatar-bg': '#F2F2F2',
+          'avatar-text': '#555555',
+          skeleton: '#EEEEEE',
+          danger: '#8A3B3B',
+          'danger-border': '#E6CFCF',
+          brand: '#18999D',
+          'brand-soft': '#E6F4F4',
+          ok: '#2F7A3E',
+          'ok-border': '#CFE6D4',
+          warn: '#8A6D1F',
+          'warn-border': '#EADFB8',
+        },
+        borderRadius: { rs: '8px', rm: '10px', rl: '12px' },
+        fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] },
+        keyframes: {
+          pop: { '0%': { transform: 'scale(1)' }, '40%': { transform: 'scale(1.08)' }, '100%': { transform: 'scale(1)' } },
+          fadeIn: { from: { opacity: 0, transform: 'translateY(2px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+          slideUp: { from: { transform: 'translateY(16px)', opacity: 0 }, to: { transform: 'translateY(0)', opacity: 1 } },
+        },
+        animation: {
+          pop: 'pop .22s ease',
+          fadeIn: 'fadeIn .18s ease-out',
+          slideUp: 'slideUp .18s ease-out',
+        },
+      },
+    },
+  };
+</script>
+<style type="text/tailwindcss">
+:root{color-scheme:light;}
+
+@layer base{
+  body{@apply bg-white text-ink font-sans antialiased m-0 p-0;}
+  button{@apply cursor-pointer;}
+  a{@apply text-inherit no-underline;}
+}
+
+@layer components{
+  /* ---------- Responsiveness: transitions, press feedback, focus ---------- */
+  button,.tab,.tag-chip,.mod-filter-btn{
+    transition:background-color .12s ease,color .12s ease,border-color .12s ease,opacity .12s ease,transform .08s ease;
+  }
+  button:active{@apply scale-[0.96];}
+  .tab:active,.tag-chip:active,.mod-filter-btn:active{@apply scale-[0.97];}
+  button:focus-visible,.tab:focus-visible,a:focus-visible{@apply outline outline-2 outline-brand outline-offset-2;}
+  input:focus-visible,textarea:focus-visible,select:focus-visible{@apply outline-none;}
+
+  .post,.mod-card,.empty-state,.composer-entry{@apply animate-fadeIn;}
+  .pulse{@apply animate-pop;}
+
+  /* ---------- Layout shell: host left nav (placeholder) + feed + right side panel ---------- */
+  .host-sidebar-placeholder{
+    @apply fixed top-0 left-0 h-screen w-[268px] bg-surface border-r border-line flex items-center justify-center text-center text-ink-meta z-[15];
+    font-size:12px;line-height:1.5;padding:20px;
+  }
+  .app-shell{@apply flex;padding-left:268px;padding-right:248px;}
+  .side-panel{@apply fixed top-0 right-0 h-screen w-[248px] bg-white border-l border-line overflow-y-auto z-20;}
+  .side-panel-inner{@apply flex flex-col items-stretch relative;gap:18px;padding:24px 20px;}
+  .brand{@apply font-bold;font-size:18px;letter-spacing:-0.01em;}
+
+  .role-switch{@apply bg-surface border border-line text-ink-soft font-semibold rounded-rs;font-size:12px;padding:7px 12px;}
+  .role-switch.is-mod{@apply text-brand border-brand bg-brand-soft;}
+
+  .side-nav-icons{@apply flex items-center relative;gap:6px;}
+
+  .icon-btn{@apply relative bg-transparent border-0 text-ink flex items-center justify-center rounded-rs;width:36px;height:36px;}
+  .icon-btn:hover{@apply bg-hover-bg;}
+  .nav-icon-btn.active{@apply bg-ink text-white;}
+  .icon-btn .dot{@apply absolute rounded-full bg-brand;top:6px;right:6px;width:7px;height:7px;}
+
+  .btn{@apply rounded-rs border border-transparent font-semibold whitespace-nowrap;font-size:14px;padding:9px 16px;}
+  .btn-primary{@apply bg-ink text-white;}
+  .btn-primary:hover{@apply opacity-[0.88];}
+  .btn-secondary{@apply bg-white text-ink border-field-border;}
+  .btn-secondary:hover{@apply bg-hover-bg;}
+  .btn-ghost{@apply bg-transparent text-ink-soft border-transparent;}
+  .btn-ghost:hover{@apply bg-hover-bg text-ink;}
+  .btn-sm{font-size:13px;padding:6px 11px;}
+  .btn:disabled{@apply opacity-50 cursor-default;}
+
+  /* Tabs read top-to-bottom in the side panel on desktop — scroll horizontally on mobile (below). */
+  .tabs{@apply flex flex-col;gap:2px;}
+  .tab{@apply text-left text-ink-soft font-medium bg-transparent border-0 rounded-rs;font-size:14px;padding:9px 10px;}
+  .tab.active{@apply text-white font-semibold bg-ink;}
+
+  /* ---------- Dropdown ---------- */
+  .dropdown-panel{
+    @apply absolute top-[44px] right-0 overflow-y-auto bg-white border border-line rounded-rm z-30;
+    width:320px;max-width:calc(100vw - 32px);max-height:420px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.04);
+  }
+  .dropdown-header{@apply flex justify-between items-center font-semibold border-b border-line;font-size:13px;padding:12px 14px;}
+  .dropdown-empty{@apply text-center text-ink-soft;font-size:13px;padding:24px 14px;}
+  .notif-item{@apply border-b border-line text-ink;font-size:13px;line-height:1.5;padding:12px 14px;}
+  .notif-item:last-child{@apply border-b-0;}
+  .notif-item.unread{@apply bg-surface;}
+  .notif-time{@apply text-ink-meta;font-size:12px;margin-top:3px;}
+
+  .menu-dropdown{
+    @apply absolute top-[28px] right-0 bg-white border border-line rounded-rs z-[25] overflow-hidden;
+    min-width:200px;box-shadow:0 4px 16px rgba(0,0,0,0.04);
+  }
+  .menu-dropdown button{@apply block w-full text-left bg-transparent border-0 text-ink;font-size:13.5px;padding:10px 14px;}
+  .menu-dropdown button:hover{@apply bg-hover-bg;}
+  .menu-dropdown button.danger{@apply text-danger;}
+
+  /* ---------- Layout ---------- */
+  .view-root{@apply mx-auto flex-1;max-width:760px;padding:20px 16px 80px;}
+
+  .composer-entry{@apply bg-white border border-line rounded-rm flex items-center justify-between flex-wrap;padding:16px;gap:14px;margin-bottom:22px;}
+  .composer-entry-text{@apply text-ink;font-size:14.5px;line-height:1.5;flex:1 1 260px;}
+  .composer-entry .btn{@apply flex-none;}
+
+  /* ---------- Post card ---------- */
+  .post{@apply border-b border-line;padding:24px 0;}
+  .post:first-child{@apply pt-0;}
+
+  /* Articles get a brand accent bar in the feed so they read as a different
+     format at a glance, before the reader even reaches the "Статья" label. */
+  .post--article{@apply border-l-[3px] border-brand;padding-left:14px;}
+
+  .post-top{@apply flex items-center justify-between;margin-bottom:10px;}
+  .post-type{@apply flex items-center uppercase text-ink-soft font-semibold;font-size:11.5px;letter-spacing:0.06em;gap:8px;}
+  .article-tag{@apply text-brand bg-brand-soft rounded-md font-bold;font-size:11px;letter-spacing:0.04em;padding:3px 8px;}
+  .read-article-btn{@apply bg-transparent border-0 text-brand font-semibold block;font-size:14px;padding:0;margin:-4px 0 10px;}
+  .read-article-btn:hover{@apply underline;}
+  .post-menu-wrap{@apply relative;}
+
+  .post-footer-stats{@apply flex items-center text-ink-soft cursor-pointer;font-size:13px;gap:16px;margin-top:2px;padding:4px 0;}
+  .post-footer-stats:hover{@apply text-ink;}
+  .footer-stat{@apply inline-flex items-center;gap:5px;}
+  .footer-stat svg{@apply flex-none;}
+  .footer-share-btn{@apply bg-transparent border-0 text-ink-soft;font-size:13px;padding:0;}
+  .footer-share-btn:hover{@apply text-ink underline;}
+
+  .post-meta-row{@apply flex items-center;gap:10px;margin-bottom:12px;}
+  .avatar{@apply rounded-full flex-none bg-avatar-bg text-avatar-text flex items-center justify-center font-semibold;width:34px;height:34px;font-size:13px;}
+  .post-meta-text{@apply flex flex-col;}
+  .post-author{@apply text-ink font-medium;font-size:13.5px;}
+  .post-time{@apply text-ink-meta;font-size:12.5px;}
+
+  .post-title{@apply font-semibold text-ink;font-size:21px;line-height:1.3;margin:0 0 8px;}
+  .post-body{@apply whitespace-pre-wrap;font-size:16px;line-height:1.65;color:#222222;margin:0 0 12px;}
+  .post-body.clamp{display:-webkit-box;-webkit-line-clamp:5;line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;}
+
+  .post-tags{@apply flex flex-wrap;gap:6px;margin-bottom:12px;}
+  .tag{@apply bg-tag-bg text-tag-text rounded-md;font-size:12px;padding:4px 9px;}
+
+  .status-pill{@apply inline-flex items-center border border-line rounded-rs;font-size:13px;color:#777777;gap:6px;padding:6px 10px;margin-bottom:12px;}
+  .status-pill .dot{@apply rounded-full;background:#999999;width:6px;height:6px;}
+  .status-pill.approved .dot{@apply bg-ok;}
+  .status-pill.approved{@apply text-ok border-ok-border;}
+  .status-pill.needs_edit .dot,.status-pill.manual_review .dot{@apply bg-warn;}
+  .status-pill.needs_edit,.status-pill.manual_review{@apply text-warn border-warn-border;}
+  .status-pill.rejected .dot{@apply bg-danger;}
+  .status-pill.rejected{@apply text-danger border-danger-border;}
+
+  .notice-box{@apply bg-surface border border-line rounded-rs text-ink-soft;font-size:13.5px;line-height:1.55;padding:14px 16px;margin-bottom:12px;}
+  .notice-box strong{@apply text-ink font-bold block;font-size:14px;margin-bottom:4px;}
+  .notice-box.warn strong{@apply text-warn;}
+  .notice-box .notice-actions{@apply flex;gap:8px;margin-top:10px;}
+
+  .reactions-row{@apply flex items-center flex-wrap;gap:6px;margin-bottom:14px;}
+  .reaction-btn{@apply bg-transparent border border-transparent rounded-rs flex items-center;font-size:13.5px;color:#555555;padding:6px 10px;gap:6px;}
+  .reaction-btn:hover{@apply bg-hover-bg;}
+  .reaction-btn.active{@apply font-semibold;background:#F2F2F2;color:#111111;}
+  .reaction-btn.save.active svg{fill:#111111;}
+
+  .replies-head{@apply flex items-center justify-between font-semibold text-ink;font-size:15.5px;margin-bottom:4px;}
+  .post-author-tag{@apply text-ink-soft font-normal;}
+  .author-status{@apply inline-block text-brand bg-brand-soft font-semibold rounded-md align-middle;font-size:11.5px;padding:2px 8px;margin-left:2px;}
+  .cta-row{@apply flex items-center justify-between flex-wrap;margin-top:10px;gap:10px;}
+
+  .reply-item{@apply border-l-2 border-line;padding-left:16px;margin-top:16px;}
+  .reply-author{@apply font-semibold text-ink;font-size:13.5px;margin-bottom:4px;}
+  .reply-sub{@apply text-ink-meta;font-size:12.5px;margin-bottom:6px;}
+  .reply-text{@apply whitespace-pre-wrap;font-size:14.5px;line-height:1.6;color:#222222;margin-bottom:6px;}
+  .reply-result{@apply text-ink-soft;font-size:13px;margin-bottom:8px;}
+  .reply-actions{@apply flex;gap:14px;}
+  .reply-actions .reaction-btn{padding:4px 2px;}
+
+  .show-more-btn{@apply bg-transparent border-0 text-ink-soft underline;font-size:13.5px;padding:8px 0;}
+
+  /* ---------- Form fields ---------- */
+  .field{margin-bottom:16px;}
+  .field label{@apply block font-semibold text-ink;font-size:13.5px;margin-bottom:6px;}
+  .field .hint{@apply text-ink-soft;font-size:12.5px;margin-top:5px;}
+  .field input[type=text],.field textarea,.field select{
+    @apply w-full bg-white border border-field-border rounded-rs text-ink outline-none resize-y;
+    font-size:14.5px;padding:10px 12px;
+  }
+  .field input[type=text]:focus,.field textarea:focus,.field select:focus{@apply border-ink;}
+  .radio-group{@apply flex flex-col;gap:10px;}
+  .radio-option{@apply flex items-center text-ink;font-size:14.5px;gap:9px;}
+  .radio-option input{accent-color:#111111;width:16px;height:16px;}
+  .checkbox-row{@apply flex items-center text-ink;font-size:14px;gap:9px;margin-bottom:16px;}
+  .checkbox-row input{accent-color:#111111;width:16px;height:16px;}
+  .tag-picker{@apply flex flex-wrap;gap:7px;}
+  .tag-chip{@apply border border-line bg-white text-tag-text rounded-md;font-size:12.5px;padding:5px 10px;}
+  .tag-chip.active{@apply bg-ink text-white border-ink;}
+  .mode-switch{@apply flex;gap:8px;margin-bottom:16px;}
+  .mode-switch button{@apply flex-1 rounded-rs border border-field-border bg-white text-ink-soft font-medium;font-size:13.5px;padding:9px;}
+  .mode-switch button.active{@apply border-ink text-ink font-semibold;}
+
+  /* ---------- Modal ---------- */
+  .modal-root{@apply fixed inset-0 z-50 flex items-end justify-center;background:rgba(17,17,17,0.35);transition:background-color .14s ease;}
+  .modal-root[hidden]{@apply hidden;}
+  .modal-root.closing{background:rgba(17,17,17,0);}
+  .modal-box{
+    @apply bg-white w-full overflow-y-auto rounded-t-rl;
+    max-width:560px;max-height:88vh;padding:22px 22px 26px;
+    animation:slideUp .18s ease-out;transition:transform .14s ease,opacity .14s ease;
+  }
+  .modal-root.closing .modal-box{@apply translate-y-4 opacity-0;}
+  @media (min-width:640px){
+    .modal-root{@apply items-center;}
+    .modal-box{@apply rounded-rl;box-shadow:0 4px 16px rgba(0,0,0,0.04);}
+  }
+
+  /* Article modal: wider than a form modal, for comfortable reading. */
+  .modal-box.article-modal{max-width:700px;}
+  .article-modal-head{@apply flex items-center justify-between;margin-bottom:10px;}
+  .article-modal-tag{@apply text-brand bg-brand-soft rounded-md font-bold uppercase;font-size:11.5px;letter-spacing:0.05em;padding:4px 10px;}
+  .article-modal .post{@apply border-l-0 border-b-0;padding:0;}
+  .modal-head{@apply flex items-start justify-between;margin-bottom:4px;gap:12px;}
+  .modal-title{@apply font-semibold;font-size:19px;}
+  .modal-sub{@apply text-ink-soft;font-size:13.5px;margin:4px 0 18px;line-height:1.5;}
+  .modal-close{@apply bg-transparent border-0 text-ink-soft leading-none;font-size:20px;padding:2px;}
+  .modal-foot{@apply flex justify-end;gap:10px;margin-top:6px;}
+
+  /* ---------- Empty / skeleton ---------- */
+  .empty-state{@apply text-center text-ink-soft;padding:60px 10px;}
+  .empty-state p{font-size:15px;margin:0 0 16px;}
+  .skeleton-card{@apply border-b border-line;padding:24px 0;}
+  .sk-line{@apply bg-skeleton rounded;height:14px;margin-bottom:10px;}
+  .sk-line.w1{width:30%;}
+  .sk-line.w2{width:70%;height:20px;}
+  .sk-line.w3{width:95%;}
+  .sk-line.w4{width:60%;}
+
+  /* ---------- Moderator panel ---------- */
+  .mod-stats{@apply flex flex-wrap;gap:24px;margin-bottom:20px;}
+  .mod-stat{@apply text-ink-soft;font-size:14px;}
+  .mod-stat b{@apply text-ink font-bold;font-size:16px;}
+  .mod-filters{@apply flex overflow-x-auto;gap:8px;margin-bottom:18px;}
+  .mod-filter-btn{@apply border border-line bg-white text-ink-soft rounded-full whitespace-nowrap;font-size:13px;padding:6px 13px;}
+  .mod-filter-btn.active{@apply bg-ink text-white border-ink;}
+  .mod-card{@apply border border-line rounded-rm;padding:18px;margin-bottom:14px;}
+  .mod-card-top{@apply flex flex-wrap justify-between items-start text-ink-soft;gap:6px 16px;margin-bottom:10px;font-size:13px;}
+  .mod-card-top b{@apply text-ink font-bold;}
+  .risk{@apply font-semibold;}
+  .risk.low{@apply text-ok;}
+  .risk.medium{@apply text-warn;}
+  .risk.high{@apply text-danger;}
+  .mod-reason{@apply text-ink-soft;font-size:13.5px;margin-bottom:10px;}
+  .mod-text{@apply bg-surface border border-line rounded-rs whitespace-pre-wrap;font-size:14.5px;line-height:1.6;color:#222;padding:12px;margin-bottom:12px;}
+  .mod-actions{@apply flex flex-wrap;gap:8px;}
+
+  /* ---------- Toast ---------- */
+  .toast-root{@apply fixed left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center;bottom:20px;gap:8px;}
+  .toast{@apply bg-ink text-white rounded-rs;font-size:13.5px;padding:10px 16px;box-shadow:0 4px 16px rgba(0,0,0,0.12);}
+
+  /* ---------- Responsive ---------- */
+  /* Below this, there's no room for a 268px host sidebar + 760px feed + 248px
+     panel, so the right panel collapses into a regular top bar (tabs scroll
+     horizontally again) and the host-nav placeholder gets out of the way —
+     on a real phone the host app's own nav would collapse too. */
+  @media (max-width:860px){
+    .host-sidebar-placeholder{@apply hidden;}
+    .app-shell{@apply flex-col;padding-left:0;padding-right:0;}
+    .view-root{@apply flex-none;}
+    .side-panel{@apply sticky border-l-0 border-b border-line;top:0;width:100%;height:auto;max-height:none;}
+    .side-panel-inner{@apply flex-row items-center flex-wrap;padding:12px 16px 8px;gap:10px;}
+    /* Brand stays far left; icons + "Создать" share line 1 on the far right
+       (margin-left:auto on the icon group pushes both over, order puts the
+       button right after the bell). Tabs get flex-basis:100% so they're
+       FORCED onto their own line below, where they scroll horizontally
+       without wrapping their label text. */
+    .side-nav-icons{@apply order-2;margin-left:auto;}
+    #create-post-btn{@apply order-3;}
+    /* Now that "Создать" trails the icon group, .side-nav-icons no longer
+       spans the full row, so a dropdown anchored to its (now narrow) box
+       would hang off the left edge. Anchor to the viewport instead. */
+    .dropdown-panel{@apply fixed;top:52px;right:16px;}
+    .tabs{@apply flex-row overflow-x-auto;flex:1 0 100%;order:5;scrollbar-width:none;}
+    .tabs::-webkit-scrollbar{@apply hidden;}
+    .tab{@apply whitespace-nowrap flex-none;}
+  }
+  @media (max-width:640px){
+    .post-title{font-size:19px;}
+    .side-panel-inner{gap:6px;}
+    .brand{font-size:0;}
+    .brand::before{content:attr(data-short);font-size:18px;font-weight:700;letter-spacing:-0.01em;}
+    .role-switch{padding:7px 9px;font-size:0;}
+    .role-switch::before{content:attr(data-short);font-size:12px;}
+    #create-post-btn{padding:9px 13px;}
+  }
+  @media (max-width:360px){
+    #create-post-btn{font-size:0;padding:9px;width:36px;}
+    #create-post-btn::before{content:"+";font-size:18px;font-weight:700;}
+  }
+}
+</style>
 </head>
 <body>
 
